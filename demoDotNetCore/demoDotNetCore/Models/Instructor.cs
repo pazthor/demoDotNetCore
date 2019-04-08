@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace demoDotNetCore.Models
 {
-    // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class Instructor
     {
-        private readonly RequestDelegate _next;
+        public int ID { get; set; }
 
-        public Instructor(RequestDelegate next)
+        [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(50)]
+        public string LastName { get; set; }
+
+        [Required]
+        [Column("FirstName")]
+        [Display(Name = "First Name")]
+        [StringLength(50)]
+        public string FirstMidName { get; set; }
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Hire Date")]
+        public DateTime HireDate { get; set; }
+
+        [Display(Name = "Full Name")]
+        public string FullName
         {
-            _next = next;
+            get { return LastName + ", " + FirstMidName; }
         }
 
-        public Task Invoke(HttpContext httpContext)
-        {
-
-            return _next(httpContext);
-        }
-    }
-
-    // Extension method used to add the middleware to the HTTP request pipeline.
-    public static class InstructorExtensions
-    {
-        public static IApplicationBuilder UseMiddlewareClassTemplate(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<Instructor>();
-        }
+        public ICollection<CourseAssignment> CourseAssignments { get; set; }
+        public OfficeAssignment OfficeAssignment { get; set; }
     }
 }
